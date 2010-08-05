@@ -156,10 +156,22 @@ class CriteriaHashTest < Test::Unit::TestCase
       should "default to $in and convert to array" do
         CriteriaHash.new(:numbers => [1,2,3].to_set)[:numbers].should == {'$in' => [1,2,3]}
       end
-
+      
       should "use existing modifier if present and convert to array" do
         CriteriaHash.new(:numbers => {'$all' => [1,2,3].to_set})[:numbers].should == {'$all' => [1,2,3]}
         CriteriaHash.new(:numbers => {'$any' => [1,2,3].to_set})[:numbers].should == {'$any' => [1,2,3]}
+      end
+    end
+
+    context "with $or operator as symbol" do
+      should "not convert array to $in statement" do
+        CriteriaHash.new(:$or => [{:foo => 1}, {:bar => 2}])[:$or].should == [{:foo => 1}, {:bar => 2}]
+      end
+    end
+
+    context "with $or operator as string" do
+      should "not convert array to $in statement" do
+        CriteriaHash.new("$or" => [{:foo => 1}, {:bar => 2}])[:$or].should == [{:foo => 1}, {:bar => 2}]
       end
     end
 
